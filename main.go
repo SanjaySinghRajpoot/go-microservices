@@ -49,5 +49,5 @@ func main() {
 	r.HandleFunc("/", rootHandler)
 	r.HandleFunc("/details", detailsHandler)
 	log.Println("Server has started!!!")
-	log.Fatal(http.ListenAndServe(":8081", r))
+	log.Fatal(http.ListenAndServe(":8080", r))
 }
