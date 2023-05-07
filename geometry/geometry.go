@@ -1,9 +1,12 @@
 package geometry
 
-func Cal(len, bre, float64) (area, perimeter float64)
-{
-   area = (len * bre);
-   perimeter = 2*(len + bre);
+import "math"
 
-   return area, perimeter;
+func Area(length, width float64) float64 {
+	return length * width
+}
+
+// Diagonal function that can be exported
+func Diagonal(length, width float64) float64 {
+	return math.Sqrt((length * length) + (width * width))
 }

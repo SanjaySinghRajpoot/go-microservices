@@ -1,15 +1,53 @@
 package main
 
 import (
-    "fmt"
-    "net/http"
+	"encoding/json"
+	"fmt"
+	"log"
+	"net/http"
+	"time"
+
+	details "github.com/SanjaySinghRajpoot/go-microservices/details"
+
+	"github.com/gorilla/mux"
 )
 
-func main() {
-    http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-        fmt.Fprintf(w, "Hello, you've requested: %s\n", r.URL.Path)
-    })
+func healthHandler(w http.ResponseWriter, r *http.Request) {
+	log.Println("Checking application health")
+	response := map[string]string{
+		"status":    "UP",
+		"timestamp": time.Now().String(),
+	}
+	json.NewEncoder(w).Encode(response)
+}
 
-	// log.Println("web server has started")
-    http.ListenAndServe(":8080", nil)
+func rootHandler(w http.ResponseWriter, r *http.Request) {
+	log.Println("Serving the homepage")
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, "Application is up and running")
+}
+
+func detailsHandler(w http.ResponseWriter, r *http.Request) {
+	log.Println("Fetching the details")
+	hostname, err := details.GetHostname()
+	if err != nil {
+		panic(err)
+	}
+	IP, _ := details.GetIP()
+	fmt.Println(hostname, IP)
+	response := map[string]string{
+		"hostname": hostname,
+		"ip":       IP.String(),
+	}
+	json.NewEncoder(w).Encode(response)
+
+}
+
+func main() {
+	r := mux.NewRouter()
+	r.HandleFunc("/health", healthHandler)
+	r.HandleFunc("/", rootHandler)
+	r.HandleFunc("/details", detailsHandler)
+	log.Println("Server has started!!!")
+	log.Fatal(http.ListenAndServe(":8081", r))
 }
